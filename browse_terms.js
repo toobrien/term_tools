@@ -2,6 +2,7 @@ class browse_terms {
     constructor(view, parent) {
         this.set_parent(parent);
         this.set_index(null);
+        this.set_highlighted_cell(null);
         this.init_view(view);
     }
 
@@ -42,6 +43,32 @@ class browse_terms {
                 }
             }
         );
+
+        chart.subscribeCrosshairMove((evt) => {
+            const data_table = this.get_data_table();
+            const tbody = data_table.childNodes[0];
+
+            if (!tbody)
+                return;
+
+            // time == row index - 1 (due to header row)
+            const i = evt.time;
+            const rows = tbody.childNodes;
+            const highlighted_cell = this.get_highlighted_cell();
+            
+            // remove existing highlight
+            if (highlighted_cell) {
+                this.get_highlighted_cell().style.backgroundColor = "";
+                this.set_highlighted_cell(null);
+            }
+            
+            // highlight hovered row
+            if (i) {
+                const label_cell = rows[i + 1].childNodes[0];
+                label_cell.style.backgroundColor = "#FF0000";
+                this.set_highlighted_cell(label_cell);
+            }
+        });
 
         const series = chart.addLineSeries();
         this.set_series(series);
@@ -86,6 +113,9 @@ class browse_terms {
 
     set_data_table(table) { this.data_table = table; }
     get_data_table() { return this.data_table; }
+
+    set_highlighted_cell(cell) { this.highlighted_cell = cell; }
+    get_highlighted_cell() { return this.highlighted_cell; }
 
     increment_index(increment) {
         const index = this.get_index();
