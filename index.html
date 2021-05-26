@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+    </head>
+    <style>
+        td {
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .left_buffer {
+            width: 200px;
+        }
+    </style>
+    <body>
+        <div id="main_view"></div>
+        <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js" charset="utf-8"></script>
+
+        <script src="./main.js"></script>
+        <script src="./browse.js"></script>
+        <script src="./browse_candles.js"></script>
+        <script src="./browse_terms.js"></script>
+        <script src="./spread.js"></script>
+        <script src="./spread_histogram.js"></script>
+        <script src="./spread_regression.js"></script>
+        
+        <script>
+            const m = new main(document.getElementById("main_view"));
+        </script>
+    </body>
+</html>

@@ -1,0 +1,4 @@
+{
+    "quandl_api_key": "<YOUR_QUANDL_API_CODE_HERE>",
+    "database_file": "./srf.db"
+}
