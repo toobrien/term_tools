@@ -1,6 +1,8 @@
 class browse_candles {
     constructor(view, terms, parent) {
         this.set_mode("nearest");
+        this.set_hover_mode(false);
+        this.set_terms(terms);
         this.set_parent(parent);
         this.init_view(view, terms);
     }
@@ -20,32 +22,54 @@ class browse_candles {
     set_parent(parent) { this.parent = parent; }
     get_parent() { return this.parent; }
 
+    set_hover_mode(hover_mode) { this.hover_mode = hover_mode; }
+    get_hover_mode() { return this.hover_mode; }
+
+    set_terms(terms) { this.terms = terms; }
+    get_terms() { return this.terms; }
+
     async init_view(view, terms) {
         const table = document.createElement("table");
         const row = table.insertRow(-1);
 
-        const filler_cell = row.insertCell(-1);
-        filler_cell.className = "left_buffer";
+        const control_cell = row.insertCell(-1);
+        control_cell.className = "left_buffer";
+        const mode_table = document.createElement("table");
+        const mode_row = mode_table.insertRow(-1);
+        const mode_label_cell = mode_row.insertCell(-1);
+        mode_label_cell.innerText = "update on hover?";
+        const mode_input_cell = mode_row.insertCell(-1);
+        const mode_input = document.createElement("input");
+        mode_input.type = "checkbox";
+        mode_input.checked = false;
+        mode_input.onclick = (checked) => this.set_hover_mode(checked);
+        mode_input_cell.appendChild(mode_input);
+        control_cell.appendChild(mode_table);
         
         const chart_cell = row.insertCell(-1);
         const chart_view = document.createElement("div");
         chart_cell.appendChild(chart_view);
         const chart = LightweightCharts.createChart(
             chart_view,
-            { width: 1000, height: 225 }
+            { 
+                width: 1000, 
+                height: 225,
+                crosshair: { mode: 0 } // non-magnetic
+            }
         );
         const series = chart.addCandlestickSeries();
-        chart.subscribeClick((evt) => {
+        const handler = (evt) => {
             if (!evt.point)
                 return;
             const x = chart.timeScale().coordinateToLogical(evt.point.x);
             terms.set_index(x);
+        }
+        chart.subscribeClick(handler);
+        chart.subscribeCrosshairMove((evt) => {
+            if (this.get_hover_mode()) handler(evt);
         });
         this.set_chart(chart);
         this.set_series(series);
-
-        //const filler_cell_right = row.insertCell(-1);
-        //filler_cell_right.style.width = "200px";
 
         view.appendChild(table);
     }

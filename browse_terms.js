@@ -31,6 +31,7 @@ class browse_terms {
             { 
                 width: 1000, 
                 height: 225,
+                crosshair: { mode: 0 },
                 timeScale: {
                     tickMarkFormatter: (time, tickMarkType, locale) => {
                         return time;

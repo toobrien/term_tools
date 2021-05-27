@@ -67,7 +67,7 @@ class spread_histogram {
             }
         ];
 
-        if (style === "cumulative_pdf")
+        if (style === "cdf")
             data[0].cumulative = { enabled: true }
 
         const layout = { 

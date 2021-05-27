@@ -17,5 +17,6 @@ setup:
 1. add your quandl api key to config.json
 2. initialize the database: python build_db.py
 3. run the server: nodejs server.js
+4. open 'localhost:8080' in browser
 
 you can update the database after SRF's daily update by running "build_db.py" if desired. it should take a minute or two. the dataset is documented here: https://www.quandl.com/data/SRF-Reference-Futures/documentation

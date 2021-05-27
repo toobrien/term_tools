@@ -50,7 +50,7 @@ class spread {
         hist_style_label_cell.innerText = "hist_style";
         const hist_style_input_cell = hist_style_row.insertCell(-1);
         const hist_style_input = document.createElement("select");
-        ["pdf", "cumulative_pdf"].forEach((style) => {
+        ["pdf", "cdf"].forEach((style) => {
             const option = document.createElement("option")
             option.value = style;
             option.innerText = style;
