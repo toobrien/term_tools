@@ -1,10 +1,10 @@
 class browse_candles {
-    constructor(view, terms, parent) {
-        this.set_mode("nearest");
-        this.set_hover_mode(false);
-        this.set_terms(terms);
+    constructor(parent) {
         this.set_parent(parent);
-        this.init_view(view, terms);
+        this.set_mode("nearest");
+        this.set_hover_mode(true);
+        this.set_arrow_div(null);
+        this.set_rows(null);
     }
 
     set_mode(mode) { this.mode = mode; }
@@ -16,8 +16,8 @@ class browse_candles {
     set_series(series) { this.series = series; }
     get_series() { return this.series; }
 
-    set_data(data) { this.data = data; }
-    get_data() { return this.data; }
+    set_arrow_div(arrow) { this.arrow = arrow; }
+    get_arrow_div() { return this.arrow; }
 
     set_parent(parent) { this.parent = parent; }
     get_parent() { return this.parent; }
@@ -25,13 +25,18 @@ class browse_candles {
     set_hover_mode(hover_mode) { this.hover_mode = hover_mode; }
     get_hover_mode() { return this.hover_mode; }
 
-    set_terms(terms) { this.terms = terms; }
-    get_terms() { return this.terms; }
+    set_rows(rows) { this.rows = rows; }
+    get_rows() { return this.rows; }
 
-    async init_view(view, terms) {
+    set_last_hovered_candle(candle) { this.last_hovered_candle = candle; }
+    get_last_hovered_candle() { return this.last_hovered_candle; }
+
+    async init_view(view) {
+        // init table
         const table = document.createElement("table");
         const row = table.insertRow(-1);
 
+        // controls
         const control_cell = row.insertCell(-1);
         control_cell.className = "left_buffer";
         const mode_table = document.createElement("table");
@@ -41,29 +46,42 @@ class browse_candles {
         const mode_input_cell = mode_row.insertCell(-1);
         const mode_input = document.createElement("input");
         mode_input.type = "checkbox";
-        mode_input.checked = false;
-        mode_input.onclick = (checked) => this.set_hover_mode(checked);
+        mode_input.checked = true;
+        mode_input.addEventListener(
+            "change", 
+            (e) => this.set_hover_mode(e.target.checked)
+        );
         mode_input_cell.appendChild(mode_input);
         control_cell.appendChild(mode_table);
         
+        // chart
+        const terms = this.get_parent().get_sibling("terms");
         const chart_cell = row.insertCell(-1);
         const chart_view = document.createElement("div");
+        chart_view.style.position = "relative";
         chart_cell.appendChild(chart_view);
         const chart = LightweightCharts.createChart(
             chart_view,
             { 
                 width: 1000, 
                 height: 225,
-                crosshair: { mode: 0 } // non-magnetic
+                crosshair: { 
+                    mode: 0,                        // non-magnetic
+                    vertLine: { visible: false },
+                    horzLine: { visible: false }
+                }
             }
         );
         const series = chart.addCandlestickSeries();
         const handler = (evt) => {
-            if (!evt.point)
+            if (!evt.time)
                 return;
-            const x = chart.timeScale().coordinateToLogical(evt.point.x);
-            terms.set_index(x);
-        }
+
+            const i = chart.timeScale().coordinateToLogical(evt.point.x);
+            terms.set_index(i);
+            this.move_arrow(i);
+        };
+
         chart.subscribeClick(handler);
         chart.subscribeCrosshairMove((evt) => {
             if (this.get_hover_mode()) handler(evt);
@@ -71,7 +89,38 @@ class browse_candles {
         this.set_chart(chart);
         this.set_series(series);
 
+        // arrow
+        const arrow_div = document.createElement("div");
+        arrow_div.style.visibility = "hidden";
+        arrow_div.style.zIndex = 8;
+        arrow_div.style.position = "absolute";
+        this.set_arrow_div(arrow_div);
+
+        const arrow_img = document.createElement("img");
+        arrow_img.src = "arrow.png";
+        arrow_img.height = "10";
+        arrow_img.width = "10";
+        
+        arrow_div.appendChild(arrow_img);
+        chart_view.appendChild(arrow_div);
+        
+        // finish
         view.appendChild(table);
+    }
+
+    move_arrow(i) {
+        const series = this.get_series();
+        const rows = this.get_rows();
+
+        const x = this.get_chart()
+                        .timeScale()
+                        .logicalToCoordinate(i);
+        const y = series.priceToCoordinate(rows[i].high);
+
+        const arrow_div = this.get_arrow_div();
+        arrow_div.style.left = `${x - 5}px`;
+        arrow_div.style.top = `${y - 15}px`;
+        arrow_div.style.visibility = "visible";
     }
 
     nearest_contract(row_sets) {
@@ -146,10 +195,13 @@ class browse_candles {
         const parent = this.get_parent();
         const contract = parent.get_contract();
         if (contract) {
+            const arrow_div = this.get_arrow_div();
+            arrow_div.style.visibility = "hidden";
             const row_sets = this.get_parent().get_row_sets();
             const processed = this.process_row_sets(row_sets);
             const series = this.get_series();
             series.setData(processed);
+            this.set_rows(processed);
         }
     }
 }

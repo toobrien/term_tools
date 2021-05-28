@@ -3,7 +3,10 @@ class browse {
         this.set_parent(parent);
         this.set_contract(null);
         this.set_row_sets(null);
-        this.set_children([]);
+        this.set_children({
+            "terms": null,
+            "candles": null
+        });
         this.init_view(view);
     }
     
@@ -18,6 +21,8 @@ class browse {
 
     set_children(children) { this.children = children; }
     get_children() { return this.children; }
+
+    get_sibling(sibling) { return this.get_children()[sibling]; }
 
     // for continuous chart subscribeClick handler
     // selects one day of term data
@@ -45,11 +50,14 @@ class browse {
         const terms_view = document.createElement("div");
         terms_cell.appendChild(terms_view);
 
-        const terms = new browse_terms(terms_view, this);
-        children.push(terms);
+        const terms = new browse_terms(this);
+        const candles = new browse_candles(this);
 
-        const candles = new browse_candles(candles_view, terms, this);
-        children.push(candles);
+        children.terms = terms;
+        children.candles = candles;
+
+        terms.init_view(terms_view);
+        candles.init_view(candles_view);
 
         this.set_children(children);
 
@@ -61,7 +69,7 @@ class browse {
         this.set_contract(parent.get_contract());
         this.set_row_sets(parent.get_row_sets());
         
-        for (const child of this.get_children())
+        for (const [ name, child ] of Object.entries(this.get_children()))
             child.refresh();
     }
 

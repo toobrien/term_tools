@@ -1,9 +1,9 @@
 class browse_terms {
-    constructor(view, parent) {
+    constructor(parent) {
         this.set_parent(parent);
         this.set_index(null);
+        this.set_chart(null);
         this.set_highlighted_cell(null);
-        this.init_view(view);
     }
 
     init_view(view) {
@@ -73,6 +73,7 @@ class browse_terms {
 
         const series = chart.addLineSeries();
         this.set_series(series);
+        this.set_chart(chart);
 
         // data table
         const data_cell = row.insertCell(-1);
@@ -100,6 +101,9 @@ class browse_terms {
     }
     get_index() { return this.index; }
 
+    set_chart(chart) { this.chart = chart; }
+    get_chart() { return this.chart; }
+
     set_row_set(row_set) { this.row_set = row_set; }
     get_row_set() { return this.row_set; }
 
@@ -120,7 +124,11 @@ class browse_terms {
 
     increment_index(increment) {
         const index = this.get_index();
-        if (index) this.set_index(index + increment);
+        if (index) {
+            const next = index + increment;
+            this.set_index(next);
+            this.get_parent().get_sibling("candles").move_arrow(next);
+        }
     }
 
     process_row_set(row_set) {
@@ -163,6 +171,7 @@ class browse_terms {
         if (row_set) {
             const series = this.get_series();
             series.setData(row_set);
+            this.get_chart().timeScale().fitContent();
         }
     }
 

@@ -153,13 +153,16 @@ class spread {
                 });
             }
         } else if (filter === "month") {
-            // "front" and "back" are month designations, e.g. "F" for january
+            // "front" and "back" are month designations, e.g. "F" for january 
             for (const row_set of row_sets) {
                 const pairs = [];
                 
+                let next = front;
                 for (const row of row_set)
-                    if (row.month == front || row.month == back)
+                    if (row.month === next) {
                         pairs.push(row);
+                        next = next === front ? back : front;
+                    }
                 
                 for (let i = 0; i + 1 < pairs.length; i += 2)
                     filtered.push({
