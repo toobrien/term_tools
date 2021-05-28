@@ -19,13 +19,27 @@ class spread_regression {
         const rows = this.get_parent().get_rows();
 
         // process here...
-        
+
         return processed;
     }
 
     update_chart() {
         const chart_view = this.get_chart_view();
         const rows = this.get_rows();
+
+        const data = [
+            {
+                x: [],
+                y: []
+            }
+        ];
+        const layout = { 
+            height: 225, width: 400, 
+            margin: { l: 25, r: 25, b: 25, t: 0, pad: 0 }
+        };
+        const configuration = {};
+        
+        Plotly.react(chart_view, data, layout, configuration);
     }
 
     init(view) {

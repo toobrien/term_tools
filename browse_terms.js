@@ -3,6 +3,25 @@ class browse_terms {
         this.set_parent(parent);
         this.set_index(null);
         this.set_chart(null);
+        this.set_chart_options({ 
+            width: 1000, 
+            height: 225,
+            crosshair: { 
+                mode: 0,
+                vertLine: { visible: false },
+                horzLine: { visible: false }
+            },
+            timeScale: {
+                tickMarkFormatter: (time, tickMarkType, locale) => {
+                    return this.get_row_set()[time].id;
+                }
+            },
+            localization: {
+                timeFormatter: (time, tickMarkType, locale) => {
+                    return this.get_row_set()[time].id;
+                }
+            }
+        });
         this.set_highlighted_cell(null);
     }
 
@@ -31,15 +50,23 @@ class browse_terms {
             { 
                 width: 1000, 
                 height: 225,
-                crosshair: { mode: 0 },
+                crosshair: { 
+                    mode: 0,
+                    vertLine: { visible: false },
+                    horzLine: { visible: false }
+                },
                 timeScale: {
                     tickMarkFormatter: (time, tickMarkType, locale) => {
+                        const res = this.get_row_set()[time].id;
+                        console.log(`tickMarkFormatter: ${res}, ${time}`);
                         return this.get_row_set()[time].id;
                     }
                 },
                 localization: {
                     timeFormatter: (time, tickMarkType, locale) => {
-                        return this.get_row_set()[time].id;
+                        const res = this.get_row_set()[time].id;
+                        console.log(`timeFormatter: ${res}, ${time}`);
+                        return res;
                     }
                 }
             }
@@ -104,6 +131,9 @@ class browse_terms {
     set_chart(chart) { this.chart = chart; }
     get_chart() { return this.chart; }
 
+    set_chart_options(chart_options) { this.chart_options = chart_options; }
+    get_chart_options() { return this.chart_options; }
+
     set_row_set(row_set) { this.row_set = row_set; }
     get_row_set() { return this.row_set; }
 
@@ -127,7 +157,7 @@ class browse_terms {
         if (index) {
             const next = index + increment;
             this.set_index(next);
-            this.get_parent().get_sibling("candles").move_arrow(next);
+            this.get_parent().get_sibling("candles").move_arrow(next, true);
         }
     }
 
@@ -171,9 +201,12 @@ class browse_terms {
     update_chart() {
         const row_set = this.get_row_set();
         if (row_set) {
-            const series = this.get_series();
-            series.setData(row_set);
-            this.get_chart().timeScale().fitContent();
+            this.get_series().setData(row_set);
+            const chart = this.get_chart();
+            // necessary to update the timeScale labels
+            // for some reason, they don't upate on setData()
+            chart.applyOptions(this.get_chart_options());
+            chart.timeScale().fitContent();
         }
     }
 

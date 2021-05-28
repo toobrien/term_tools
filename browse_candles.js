@@ -2,7 +2,7 @@ class browse_candles {
     constructor(parent) {
         this.set_parent(parent);
         this.set_mode("nearest");
-        this.set_hover_mode(true);
+        //this.set_hover_mode(true);
         this.set_arrow_div(null);
         this.set_rows(null);
     }
@@ -22,14 +22,11 @@ class browse_candles {
     set_parent(parent) { this.parent = parent; }
     get_parent() { return this.parent; }
 
-    set_hover_mode(hover_mode) { this.hover_mode = hover_mode; }
-    get_hover_mode() { return this.hover_mode; }
+    //set_hover_mode(hover_mode) { this.hover_mode = hover_mode; }
+    //get_hover_mode() { return this.hover_mode; }
 
     set_rows(rows) { this.rows = rows; }
     get_rows() { return this.rows; }
-
-    set_last_hovered_candle(candle) { this.last_hovered_candle = candle; }
-    get_last_hovered_candle() { return this.last_hovered_candle; }
 
     async init_view(view) {
         // init table
@@ -39,6 +36,7 @@ class browse_candles {
         // controls
         const control_cell = row.insertCell(-1);
         control_cell.className = "left_buffer";
+        /*
         const mode_table = document.createElement("table");
         const mode_row = mode_table.insertRow(-1);
         const mode_label_cell = mode_row.insertCell(-1);
@@ -53,6 +51,7 @@ class browse_candles {
         );
         mode_input_cell.appendChild(mode_input);
         control_cell.appendChild(mode_table);
+        */
         
         // chart
         const terms = this.get_parent().get_sibling("terms");
@@ -79,13 +78,13 @@ class browse_candles {
 
             const i = chart.timeScale().coordinateToLogical(evt.point.x);
             terms.set_index(i);
-            this.move_arrow(i);
+            
+            //if (this.get_hover_mode())
+            this.move_arrow(i, false);
         };
 
         chart.subscribeClick(handler);
-        chart.subscribeCrosshairMove((evt) => {
-            if (this.get_hover_mode()) handler(evt);
-        });
+        chart.subscribeCrosshairMove(handler);
         this.set_chart(chart);
         this.set_series(series);
 
@@ -108,19 +107,39 @@ class browse_candles {
         view.appendChild(table);
     }
 
-    move_arrow(i) {
+    move_arrow(i, check_visible_range) {
         const series = this.get_series();
         const rows = this.get_rows();
+        const time_scale = this.get_chart().timeScale();
 
-        const x = this.get_chart()
-                        .timeScale()
-                        .logicalToCoordinate(i);
-        const y = series.priceToCoordinate(rows[i].high);
+        // reposition view if necessary to keep arrow
+        if (check_visible_range) {
+            const visible_range = time_scale.getVisibleLogicalRange();
+            const left_bound = visible_range.from;
+            const right_bound = visible_range.to;
+            const delta = Math.floor((visible_range.to - visible_range.from) * 0.2);
+            const buffer = 10;
 
-        const arrow_div = this.get_arrow_div();
-        arrow_div.style.left = `${x - 5}px`;
-        arrow_div.style.top = `${y - 15}px`;
-        arrow_div.style.visibility = "visible";
+            let increment = i < left_bound + buffer ? -delta :
+                            i > right_bound - buffer ? delta : 
+                            0;
+            
+            time_scale.setVisibleLogicalRange({
+                from: left_bound + increment,
+                to: right_bound + increment
+            });
+        }
+
+        // reposition arrow
+        setTimeout(() => {
+            const x = time_scale.logicalToCoordinate(i);
+            const y = series.priceToCoordinate(rows[i].high);
+
+            const arrow_div = this.get_arrow_div();
+            arrow_div.style.left = `${x - 5}px`;
+            arrow_div.style.top = `${y - 15}px`;
+            arrow_div.style.visibility = "visible";
+        }, 10);
     }
 
     nearest_contract(row_sets) {
