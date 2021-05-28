@@ -34,12 +34,12 @@ class browse_terms {
                 crosshair: { mode: 0 },
                 timeScale: {
                     tickMarkFormatter: (time, tickMarkType, locale) => {
-                        return time;
+                        return this.get_row_set()[time].id;
                     }
                 },
                 localization: {
                     timeFormatter: (time, tickMarkType, locale) => {
-                        return time;
+                        return this.get_row_set()[time].id;
                     }
                 }
             }
@@ -135,11 +135,13 @@ class browse_terms {
         const processed = [];
         for (let i = 0; i < row_set.length; i++) {
             const row = row_set[i];
+            const year = row.year.toString();
             processed.push({
                 time: i,
                 value: row.settle,
-                year: row.year.toString(),
-                month: row.month
+                year: year,
+                month: row.month,
+                id: row.month + year.substring(2)
             });
         }
         return processed;
@@ -160,7 +162,7 @@ class browse_terms {
 
             for (const row of row_set) {
                 const next = table.insertRow(-1);
-                next.insertCell(-1).innerText = row.month + row.year.substring(2);
+                next.insertCell(-1).innerText = row.id;
                 next.insertCell(-1).innerText = row.value;
             }        
         }
