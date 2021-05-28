@@ -176,11 +176,11 @@ class spread {
             // 60, 90 means the front month has no fewer 
             // than 60 nor more than 90 days to expiration.
             // the back month is the subsequent contract.
-            front = int(front);
-            back = int(back);
+            front = parseInt(front);
+            back = parseInt(back);
             
-            for (const row_set of row_sets)
-                for (const i = 0; i < row_set.length - 1; i++) {
+            for (let row_set of row_sets)
+                for (let i = 0; i < row_set.length - 1; i++) {
                     const row = row_set[i];
                     if (row.dte >= front && row.dte <= back)
                         filtered.push({
