@@ -65,7 +65,7 @@ class spread {
         filter_label_cell.innerText = "filter";
         const filter_input_cell = filter_row.insertCell(-1);
         const filter_input = document.createElement("select");
-        ["sequence", "month", "days_to_expiration"].forEach((filter) => {
+        ["sequence", "month", "id"].forEach((filter) => {
             const option = document.createElement("option")
             option.value = filter;
             option.innerText = filter;
@@ -76,10 +76,12 @@ class spread {
         
             // text inputs 
         [ 
-            { name: "start", defval: "1000-01-01" }, 
-            { name: "end",  defval: "3000-01-01" },
+            { name: "start", defval: "2018-01-01" }, 
+            { name: "end",  defval: "2022-01-01" },
             { name: "front", defval: 0 },
-            { name: "back", defval: 1 }
+            { name: "back", defval: 1 },
+            { name: "min_dte", defval: 0 },
+            { name: "max_dte", defval: 365 }
         ].forEach((def) => {
             const input_row = control_table.insertRow(-1);
             const label_cell = input_row.insertCell(-1);
@@ -134,7 +136,7 @@ class spread {
         return row_sets.slice(i, j);
     }
 
-    filter_type(row_sets, filter, front, back) {
+    filter_contracts(row_sets, filter, front, back, min_dte, max_dte) {
         const filtered = [];
 
         if (filter === "sequence") {
@@ -146,11 +148,18 @@ class spread {
                 if (row_set.length <= back)
                     continue;
                 
-                filtered.push({
-                    date: row_set[front].date,
-                    spread: row_set[front].settle - row_set[back].settle,
-                    days_to_expiration: row_set[front].dte
-                });
+                const front_row = row_set[front];
+                const back_row = row_set[back];
+                const dte = front_row.dte;
+
+                if (dte >= min_dte && dte <= max_dte)
+                    filtered.push({
+                        date: front_row.date,
+                        spread: front_row.settle - back_row.settle,
+                        days_to_expiration: front_row.dte,
+                        front_id: front_row.month + front_row.year.substring(2),
+                        back_id: back_row.month + back_row.year.substring(2)
+                    });
             }
         } else if (filter === "month") {
             // "front" and "back" are month designations, e.g. "F" for january 
@@ -164,31 +173,46 @@ class spread {
                         next = next === front ? back : front;
                     }
                 
-                for (let i = 0; i + 1 < pairs.length; i += 2)
-                    filtered.push({
-                        date: pairs[i].date,
-                        spread: pairs[i].settle - pairs[i + 1].settle,
-                        days_to_expiration: pairs[i].dte
-                    });
-            }
-        } else if (filter === "days_to_expiration") {
-            // "front" and "back" designate a period, e.g.
-            // 60, 90 means the front month has no fewer 
-            // than 60 nor more than 90 days to expiration.
-            // the back month is the subsequent contract.
-            front = parseInt(front);
-            back = parseInt(back);
-            
-            for (let row_set of row_sets)
-                for (let i = 0; i < row_set.length - 1; i++) {
-                    const row = row_set[i];
-                    if (row.dte >= front && row.dte <= back)
+                for (let i = 0; i + 1 < pairs.length; i += 2) {
+                    const front_row = pairs[i];
+                    const back_row = pairs[i + 1];
+                    const dte = front_row.dte;
+
+                    if (dte >= min_dte && dte <= max_dte)
                         filtered.push({
-                           date: row.date,
-                           spread: row.settle - row_set[i + 1].settle,
-                           days_to_expiration: row.dte
+                            date: front_row.date,
+                            spread: front_row.settle - back_row.settle,
+                            days_to_expiration: front_row.dte,
+                            front_id: front_row.month + front_row.year.substring(2),
+                            back_id: back_row.month + back_row.year.substring(2)
                         });
                 }
+            }
+        } else if (filter === "id") {
+            // "front" and "back" are unique contract ids, e.g. "K20", "Z19", "G98", etc.
+            for (const row_set of row_sets) {
+                const pair = [];
+                for (const row of row_set) {
+                    const id = row.month + row.year.substring(2);
+                    if (front == id) pair.push(row);
+                    else if (back == id) pair.push(row);
+                    if (pair.length == 2) {
+                        const front_row = pair[0];
+                        const back_row = pair[1];
+                        const dte = front_row.dte;
+                        
+                        if (dte >= min_dte && dte <= max_dte)
+                            filtered.push({
+                                date: pair[0].date,
+                                spread: pair[0].settle - pair[1].settle,
+                                days_to_expiration: pair[0].dte,
+                                front_id: front,
+                                back_id: back
+                            });
+                        break;
+                    }
+                }
+            }
         }
 
         return filtered;
@@ -201,16 +225,24 @@ class spread {
             return;
 
         const controls = this.get_controls();
+        // strings
         const hist_style = controls.hist_style.value;
         const filter = controls.filter.value;
         const start = controls.start.value;
         const end = controls.end.value;
+        // may be int or string
         const front = controls.front.value;
         const back = controls.back.value;
+        // must be int
+        const min_dte = parseInt(controls.min_dte.value);
+        const max_dte = parseInt(controls.max_dte.value);
         
         // filter dates here to save another sql call and json serializaiton
         const slice = this.set_range(row_sets, start, end);
-        const filtered = this.filter_type(slice, filter, front, back);
+        const filtered = this.filter_contracts(
+            slice, filter, front, back, 
+            min_dte, max_dte
+        );
         this.set_rows(filtered);
         this.set_hist_style(hist_style);
 
