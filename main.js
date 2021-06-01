@@ -85,6 +85,7 @@ class main {
    async refresh() {
         this.set_contract(this.get_contract_select().value);
         let row_sets = await this.query_db();
+            
         this.set_row_sets(row_sets);
 
         for (const child of this.get_children())
@@ -97,7 +98,7 @@ class main {
             SELECT DISTINCT
                 contract_id, name, month, year, 
                 date, open, high, low, settle,
-                julianday(to_date) - julianday(date) AS dte
+                julianday(date) - julianday(from_date) AS days_listed
             FROM ohlc INNER JOIN metadata USING(contract_id)
             WHERE name = "${contract}"
             ORDER BY date ASC, year ASC, month ASC;

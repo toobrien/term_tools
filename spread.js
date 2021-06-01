@@ -76,12 +76,12 @@ class spread {
         
             // text inputs 
         [ 
-            { name: "start", defval: "2018-01-01" }, 
-            { name: "end",  defval: "2022-01-01" },
+            { name: "start", defval: "2005-01-01" }, 
+            { name: "end",  defval: "2025-01-01" },
             { name: "front", defval: 0 },
             { name: "back", defval: 1 },
-            { name: "min_dte", defval: 0 },
-            { name: "max_dte", defval: 100 }
+            { name: "min_days_listed", defval: 0 },
+            { name: "max_days_listed", defval: 100 }
         ].forEach((def) => {
             const input_row = control_table.insertRow(-1);
             const label_cell = input_row.insertCell(-1);
@@ -136,7 +136,7 @@ class spread {
         return row_sets.slice(i, j);
     }
 
-    filter_contracts(row_sets, filter, front, back, min_dte, max_dte) {
+    filter_contracts(row_sets, filter, front, back, min_days_listed, max_days_listed) {
         const filtered = [];
 
         if (filter === "sequence") {
@@ -150,13 +150,13 @@ class spread {
                 
                 const front_row = row_set[front];
                 const back_row = row_set[back];
-                const dte = front_row.dte;
+                const days_listed = front_row.days_listed;
 
-                if (dte >= min_dte && dte <= max_dte)
+                if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                     filtered.push({
                         date: front_row.date,
                         spread: front_row.settle - back_row.settle,
-                        days_to_expiration: front_row.dte,
+                        days_listed: front_row.days_listed,
                         front_id: front_row.month + front_row.year.substring(2),
                         back_id: back_row.month + back_row.year.substring(2)
                     });
@@ -176,13 +176,13 @@ class spread {
                 for (let i = 0; i + 1 < pairs.length; i += 2) {
                     const front_row = pairs[i];
                     const back_row = pairs[i + 1];
-                    const dte = front_row.dte;
+                    const days_listed = front_row.days_listed;
 
-                    if (dte >= min_dte && dte <= max_dte)
+                    if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                         filtered.push({
                             date: front_row.date,
                             spread: front_row.settle - back_row.settle,
-                            days_to_expiration: front_row.dte,
+                            days_listed: front_row.days_listed,
                             front_id: front_row.month + front_row.year.substring(2),
                             back_id: back_row.month + back_row.year.substring(2)
                         });
@@ -199,13 +199,13 @@ class spread {
                     if (pair.length == 2) {
                         const front_row = pair[0];
                         const back_row = pair[1];
-                        const dte = front_row.dte;
+                        const days_listed = front_row.days_listed;
                         
-                        if (dte >= min_dte && dte <= max_dte)
+                        if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                             filtered.push({
                                 date: pair[0].date,
                                 spread: pair[0].settle - pair[1].settle,
-                                days_to_expiration: pair[0].dte,
+                                days_listed: pair[0].days_listed,
                                 front_id: front,
                                 back_id: back
                             });
@@ -234,14 +234,14 @@ class spread {
         const front = controls.front.value;
         const back = controls.back.value;
         // must be int
-        const min_dte = parseInt(controls.min_dte.value);
-        const max_dte = parseInt(controls.max_dte.value);
+        const min_days_listed = parseInt(controls.min_days_listed.value);
+        const max_days_listed = parseInt(controls.max_days_listed.value);
         
         // filter dates here to save another sql call and json serializaiton
         const slice = this.set_range(row_sets, start, end);
         const filtered = this.filter_contracts(
             slice, filter, front, back, 
-            min_dte, max_dte
+            min_days_listed, max_days_listed
         );
         this.set_rows(filtered);
         this.set_hist_style(hist_style);

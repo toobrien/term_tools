@@ -97,9 +97,8 @@ if __name__=="__main__":
     },
     "CME_EDM2019": {
       "2014-02-20": { 2: 96.0, 3: 96.0 },
-
     },
-    "CM_EDZ2017": {
+    "CME_EDZ2017": {
       "2014-02-24": { 2: 97.0, 3: 97.0 }
     }
   }
@@ -167,12 +166,18 @@ if __name__=="__main__":
   data = reader(get_csv_file(metadata_url))
   print("downloaded metadata: {:.2f}".format(time() - start))
 
-  # prepare and clean metadata records
+ # prepare and clean metadata records
+  corrections = {}
+
   rs = []
   for r in data:
     for i in range(len(r)):
       if r[i] == "" or r[i] == None:
         r[i] = "NULL"
+
+      if r[0] in corrections:
+        for k, v in corrections[r[0]].items():
+          r[k] = v 
 
       rs.append([ r[0], r[4], r[5] ])
   
