@@ -37,17 +37,17 @@ The bottom pane shows a histogram and scatter plot of various spreads. The conve
 3. "id": identify the legs using their contract id, e.g. "Z20" for december 2020
   - use this to identify a single spread
 
-"min_dte" and "max_dte" filter data using the days-until-expiration of the front leg of the spread. for example, the settings:
+"min_days_listed" and "max_days_listed" filter data using the number of days the front leg of the spread has been listed. for example, the settings:
 
 - start: 2008-01-01
 - end: 2021-01-01
 - front: U
 - back: V
-- min_dte = 0
-- max_dte = 90
+- min_days_listed = 250
+- max_days_listed = 350
 
-will select all data points for the august/october spread from January 1st, 2008 until January first 2020, where the august contract has at most 90 days to expiration. the value of each data point is the august settle minus the october settle. these data points can be viewed three ways:
+will select all data points for the august/october spread from January 1st, 2008 until January first 2020, where the august contract has been listed for at least 250 and less than 350 days. the value of each data point is the august settle minus the october settle. these data points can be viewed three ways:
 
 - cdf histogram: x = spread value, y = cumulative probability. e.g. (0-1, 97.1) means that 97.1% of the data points are less than 0.
 - pdf histogram: x = spread value, y = probability density. e.g. (0-1, 0.07) means that 7% of the data points are greater than or equal to 0 and less than 1.
-- scatter plot: x = days to expiration, y = spread value. e.g. (34, 7.10) for the "U20/V20" series means the august 2020 contract, at 34 days to expiration, was 7.10 points higher than the october 2020 contract. you toggle a series' visiblity by clicking its entry in the legend.
+- scatter plot: x = days listed, y = spread value. e.g. (34, 7.10) for the "U20/V20" series means the august 2020 contract, 34 days after listing, was 7.10 points higher than the october 2020 contract. you toggle a series' visiblity by clicking its entry in the legend.
