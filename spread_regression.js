@@ -24,20 +24,29 @@ class spread_regression {
         const traces = this.get_traces();
         const layout = { 
             height: 225, width: 400, 
-            margin: { l: 25, r: 25, b: 25, t: 0, pad: 0 }
+            margin: { l: 25, r: 25, b: 25, t: 0, pad: 0 },
+            grid: { 
+                rows: 2, 
+                columns: 1,
+            },
+            yaxis: { domain: [0.2, 1] },
+            yaxis2: { domain: [0, 0.2] }
         };
         const configuration = { displayModeBar: false };
         Plotly.react(chart_view, traces, layout, configuration);
     }
 
     process_traces(rows) {
-        const processed = [];
         const traces = {};
+        const processed = [];
+        
+        let median = 0;
         const mid_index = Math.floor(rows.length / 2);
         let max_days_listed = 0;
-        let median = 0;
+        
+        const vol = {};
 
-        // all other traces
+        // main traces
         for (const row of rows) {
             const spread_id = `${row.front_id}/${row.back_id}`;
             
@@ -58,7 +67,34 @@ class spread_regression {
             max_days_listed = max_days_listed > row.days_listed ?
                 max_days_listed : 
                 row.days_listed;
+
+            if (!(row.days_listed in vol))
+                vol[row.days_listed] = [];
+            vol[row.days_listed].push(row.spread);
         }
+
+        // vol trace (subplot): variance of values by days_listed
+        for (const [k, v] of Object.entries(vol)) {
+            const vals = vol[k];
+            const mean = vals.reduce((acc, x) => acc + x) / vals.length;
+            const variance = vals.reduce((acc, x) => Math.pow(x - mean, 2) + acc) / vals.length;
+            const stdev = Math.sqrt(variance).toPrecision(3);
+            vol[k] = stdev;
+        }
+
+        const vol_sorted = Object
+                        .keys(vol)
+                        .map((k, i) => { return { days_listed: k, vol: vol[k] }; })
+                        .sort((a, b) => a.days_listed - b.days_listed);
+
+        const vol_trace = {
+            x: vol_sorted.map((r) => r.days_listed),
+            y: vol_sorted.map((r) => r.vol),
+            mode: "lines",
+            line: { color: "#0000FF", width: 2 },
+            name: "vol",
+            yaxis: "y2"
+        };
 
         // median trace
         rows.sort((a,b) => a.spread - b.spread);
@@ -75,6 +111,8 @@ class spread_regression {
             name: "median"
         }
 
+        // aggregate traces
+        processed.push(vol_trace);
         processed.push(median_trace);
         for (const [_, v] of Object.entries(traces))
             processed.push(v);
