@@ -81,7 +81,7 @@ class spread {
             { name: "front", defval: 0 },
             { name: "back", defval: 1 },
             { name: "min_days_listed", defval: 0 },
-            { name: "max_days_listed", defval: 100 }
+            { name: "max_days_listed", defval: 500 }
         ].forEach((def) => {
             const input_row = control_table.insertRow(-1);
             const label_cell = input_row.insertCell(-1);

@@ -1,5 +1,5 @@
 {
-    "quandl_api_key": "<YOUR_API_KEY_HERE>",
+    "quandl_api_key": " 8wxbVrynMew4iSBG-8K6",
     "database_file": "./srf.db",
     "server_uri": "http://localhost:8080",
     "contracts": [
