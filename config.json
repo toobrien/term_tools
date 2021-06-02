@@ -1,4 +1,44 @@
 {
-    "quandl_api_key": "8wxbVrynMew4iSBG-8K6",
-    "database_file": "./srf.db"
+    "quandl_api_key": "<YOUR_API_KEY_HERE",
+    "database_file": "./srf.db",
+    "server_uri": "http://localhost:8080",
+    "contracts": [
+        {
+            "friendly_name": "HE",
+            "srf_name": "LN"
+        },
+        {
+            "friendly_name": "LE",
+            "srf_name": "LC"
+        },
+        {
+            "friendly_name": "ZS",
+            "srf_name": "S"
+        },
+        {
+            "friendly_name": "ZM",
+            "srf_name": "SM"
+        },
+        {
+            "friendly_name": "ZL",
+            "srf_name": "BO"
+        },
+        {
+            "friendly_name": "ZC",
+            "srf_name": "C"
+        },
+        {
+            "friendly_name": "ZW",
+            "srf_name": "W"
+        },
+        {
+            "friendly_name": "KE",
+            "srf_name": "KW"
+        },
+        {
+            "friendly_name": "GE",
+            "srf_name": "ED"
+        }
+    ]
+
 }

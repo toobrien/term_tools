@@ -1,4 +1,5 @@
+spread_def.json
 queries
-config.json
+#config.json
 node_modules
 *.db

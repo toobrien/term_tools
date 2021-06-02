@@ -43,11 +43,13 @@ class spread_regression {
         let median = 0;
         const mid_index = Math.floor(rows.length / 2);
         let max_days_listed = 0;
+        let min_days_listed = Number.MAX_SAFE_INTEGER;
         
         const vol = {};
 
         // main traces
         for (const row of rows) {
+            // spread_id = plot title
             const spread_id = `${row.front_id}/${row.back_id}`;
             
             if (!(spread_id in traces))
@@ -68,6 +70,11 @@ class spread_regression {
                 max_days_listed : 
                 row.days_listed;
 
+            min_days_listed = min_days_listed < row.days_listed ?
+                min_days_listed :
+                row.days_listed;
+
+            // group vol by days listed
             if (!(row.days_listed in vol))
                 vol[row.days_listed] = [];
             vol[row.days_listed].push(row.spread);
@@ -104,7 +111,7 @@ class spread_regression {
             rows[mid_index].spread;
 
         const median_trace = {
-            x: [0, max_days_listed],
+            x: [min_days_listed, max_days_listed],
             y: [median, median],
             mode: "lines",
             line: { color: "#FF0000", width: 2 },
