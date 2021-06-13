@@ -118,6 +118,11 @@ class spread_regression {
             name: "median"
         }
 
+        // regression trace
+        const regression_trace = {
+            
+        };
+
         // aggregate traces
         processed.push(vol_trace);
         processed.push(median_trace);

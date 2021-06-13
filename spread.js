@@ -158,7 +158,8 @@ class spread {
                         spread: front_row.settle - back_row.settle,
                         days_listed: front_row.days_listed,
                         front_id: front_row.month + front_row.year.substring(2),
-                        back_id: back_row.month + back_row.year.substring(2)
+                        back_id: back_row.month + back_row.year.substring(2),
+                        spot_estimate: row_set[0].settle
                     });
             }
         } else if (filter === "month") {
@@ -184,7 +185,8 @@ class spread {
                             spread: front_row.settle - back_row.settle,
                             days_listed: front_row.days_listed,
                             front_id: front_row.month + front_row.year.substring(2),
-                            back_id: back_row.month + back_row.year.substring(2)
+                            back_id: back_row.month + back_row.year.substring(2),
+                            spot_estimate: row_set[0].settle
                         });
                 }
             }
@@ -207,7 +209,8 @@ class spread {
                                 spread: pair[0].settle - pair[1].settle,
                                 days_listed: pair[0].days_listed,
                                 front_id: front,
-                                back_id: back
+                                back_id: back,
+                                spot_estimate: row_set[0].settle
                             });
                         break;
                     }
