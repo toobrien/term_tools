@@ -137,7 +137,7 @@ class spread {
     }
 
     filter_contracts(row_sets, filter, front, back, min_days_listed, max_days_listed) {
-        const filtered = [];
+        var filtered = [];
 
         if (filter === "sequence") {
             // "front" and "back" are sequence numbers, e.g. 0 for front month contract
@@ -191,29 +191,60 @@ class spread {
                 }
             }
         } else if (filter === "id") {
-            // "front" and "back" are unique contract ids, e.g. "K20", "Z19", "G98", etc.
-            for (const row_set of row_sets) {
-                const pair = [];
-                for (const row of row_set) {
-                    const id = row.month + row.year.substring(2);
-                    if (front == id) pair.push(row);
-                    else if (back == id) pair.push(row);
-                    if (pair.length == 2) {
-                        const front_row = pair[0];
-                        const back_row = pair[1];
-                        const days_listed = front_row.days_listed;
-                        
-                        if (days_listed >= min_days_listed && days_listed <= max_days_listed)
-                            filtered.push({
-                                date: pair[0].date,
-                                spread: pair[0].settle - pair[1].settle,
-                                days_listed: pair[0].days_listed,
-                                front_id: front,
-                                back_id: back,
-                                spot_estimate: row_set[0].settle
-                            });
-                        break;
-                    }
+            // - "front" and "back" are unique contract ids, e.g. "K20", "Z19", "G98", etc.
+            // - compare with equal-width calendars
+            const front_month = front.substring(0,1);
+            const back_month = back.substring(0,1);
+            const front_year = parseInt(front.substring(1));
+            const back_year = parseInt(back.substring(1));
+            const width = back_year - front_year;
+
+            const base_year = parseInt(row_sets[0][0].year);
+            const len = row_sets[row_sets.length - 1].length;
+            const end_year = parseInt(row_sets[row_sets.length - 1][len - 1].year);
+            const num_years = end_year - base_year;
+            
+            for (var i = 0; i < num_years; i++) {
+                const front_offset = (base_year + i).toString().substring(2);
+                const back_offset = (base_year + i + width).toString().substring(2);
+                const front_i = front_month + front_offset;
+                const back_i = back_month + back_offset;
+                const filtered_i = this.id(
+                    row_sets,
+                    front_i, back_i,
+                    min_days_listed, max_days_listed
+                );
+                filtered = filtered.concat(filtered_i);
+            }
+        }
+
+        return filtered;
+    }
+
+    id(row_sets, front, back, min_days_listed, max_days_listed) {
+        const filtered = [];
+
+        for (const row_set of row_sets) {
+            const pair = [];
+            for (const row of row_set) {
+                const id = row.month + row.year.substring(2);
+                if (front == id) pair.push(row);
+                else if (back == id) pair.push(row);
+                if (pair.length == 2) {
+                    const front_row = pair[0];
+                    const back_row = pair[1];
+                    const days_listed = front_row.days_listed;
+                    
+                    if (days_listed >= min_days_listed && days_listed <= max_days_listed)
+                        filtered.push({
+                            date: pair[0].date,
+                            spread: pair[0].settle - pair[1].settle,
+                            days_listed: pair[0].days_listed,
+                            front_id: front,
+                            back_id: back,
+                            spot_estimate: row_set[0].settle
+                        });
+                    break;
                 }
             }
         }
