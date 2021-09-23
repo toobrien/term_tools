@@ -11,6 +11,19 @@
         { "friendly_name": "ZC", "srf_name": "C" },
         { "friendly_name": "ZW", "srf_name": "W" },
         { "friendly_name": "KE", "srf_name": "KW" },
-        { "friendly_name": "GE", "srf_name": "ED" }
+        { "friendly_name": "ZO", "srf_name": "O" },
+        { "friendly_name": "CL", "srf_name": "CL" },
+        { "friendly_name": "NG", "srf_name": "NG" },
+        { "friendly_name": "G", "srf_name": "G" },
+        { "friendly_name": "RB", "srf_name": "RB" },
+        { "friendly_name": "O", "srf_name": "O" },
+        { "friendly_name": "HO", "srf_name": "HO" },
+        { "friendly_name": "ATW", "srf_name": "ATW" },
+        { "friendly_name": "CC", "srf_name": "CC" },
+        { "friendly_name": "KC", "srf_name": "KC" },
+        { "friendly_name": "SB", "srf_name": "SB" },
+        { "friendly_name": "CT", "srf_name": "CT" },
+        { "friendly_name": "GE", "srf_name": "ED" },
+        { "friendly_name": "ZQ", "srf_name": "FF" }
     ]
 }

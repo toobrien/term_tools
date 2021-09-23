@@ -150,13 +150,13 @@ class spread {
                 
                 const front_row = row_set[front];
                 const back_row = row_set[back];
-                const days_listed = front_row.days_listed;
+                const days_listed = back_row.days_listed;
 
                 if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                     filtered.push({
                         date: front_row.date,
                         spread: front_row.settle - back_row.settle,
-                        days_listed: front_row.days_listed,
+                        days_listed: days_listed,
                         front_id: front_row.month + front_row.year.substring(2),
                         back_id: back_row.month + back_row.year.substring(2),
                         spot_estimate: row_set[0].settle
@@ -177,13 +177,13 @@ class spread {
                 for (let i = 0; i + 1 < pairs.length; i += 2) {
                     const front_row = pairs[i];
                     const back_row = pairs[i + 1];
-                    const days_listed = front_row.days_listed;
+                    const days_listed = back_row.days_listed;
 
                     if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                         filtered.push({
                             date: front_row.date,
                             spread: front_row.settle - back_row.settle,
-                            days_listed: front_row.days_listed,
+                            days_listed: days_listed,
                             front_id: front_row.month + front_row.year.substring(2),
                             back_id: back_row.month + back_row.year.substring(2),
                             spot_estimate: row_set[0].settle
@@ -204,7 +204,7 @@ class spread {
             const end_year = parseInt(row_sets[row_sets.length - 1][len - 1].year);
             const num_years = end_year - base_year;
             
-            for (var i = 0; i < num_years; i++) {
+            for (var i = 0; i <= num_years; i++) {
                 const front_offset = (base_year + i).toString().substring(2);
                 const back_offset = (base_year + i + width).toString().substring(2);
                 const front_i = front_month + front_offset;
@@ -233,13 +233,13 @@ class spread {
                 if (pair.length == 2) {
                     const front_row = pair[0];
                     const back_row = pair[1];
-                    const days_listed = front_row.days_listed;
+                    const days_listed = back_row.days_listed;
                     
                     if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                         filtered.push({
                             date: pair[0].date,
                             spread: pair[0].settle - pair[1].settle,
-                            days_listed: pair[0].days_listed,
+                            days_listed: days_listed,
                             front_id: front,
                             back_id: back,
                             spot_estimate: row_set[0].settle
