@@ -76,12 +76,12 @@ class spread {
         
             // text inputs 
         [ 
-            { name: "start", defval: "2005-01-01" }, 
-            { name: "end",  defval: "2025-01-01" },
+            { name: "start", defval: "2000-01-01" }, 
+            { name: "end",  defval: "2035-01-01" },
             { name: "front", defval: 0 },
             { name: "back", defval: 1 },
             { name: "min_days_listed", defval: 0 },
-            { name: "max_days_listed", defval: 500 }
+            { name: "max_days_listed", defval: 10000 }
         ].forEach((def) => {
             const input_row = control_table.insertRow(-1);
             const label_cell = input_row.insertCell(-1);

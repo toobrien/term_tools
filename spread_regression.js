@@ -30,7 +30,8 @@ class spread_regression {
                 columns: 1,
             },
             yaxis: { domain: [0.2, 1] },
-            yaxis2: { domain: [0, 0.2] }
+            yaxis2: { domain: [0, 0.2] },
+            hovermode: "closest"
         };
         const configuration = { displayModeBar: false };
         Plotly.react(chart_view, traces, layout, configuration);
