@@ -105,7 +105,7 @@ class spread_regression {
         };
 
         // median trace
-        rows.sort((a,b) => a.spread - b.spread);
+        rows.sort((a, b) => b.spread - a.spread);
 
         median = rows.length % 2 == 0 ? 
             (rows[mid_index - 1].spread + rows[mid_index].spread) / 2 :

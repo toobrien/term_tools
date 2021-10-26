@@ -155,7 +155,7 @@ class spread {
                 if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                     filtered.push({
                         date: front_row.date,
-                        spread: front_row.settle - back_row.settle,
+                        spread: -front_row.settle + back_row.settle,
                         days_listed: days_listed,
                         front_id: front_row.month + front_row.year.substring(2),
                         back_id: back_row.month + back_row.year.substring(2),
@@ -182,7 +182,7 @@ class spread {
                     if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                         filtered.push({
                             date: front_row.date,
-                            spread: front_row.settle - back_row.settle,
+                            spread: -front_row.settle + back_row.settle,
                             days_listed: days_listed,
                             front_id: front_row.month + front_row.year.substring(2),
                             back_id: back_row.month + back_row.year.substring(2),
@@ -238,7 +238,7 @@ class spread {
                     if (days_listed >= min_days_listed && days_listed <= max_days_listed)
                         filtered.push({
                             date: pair[0].date,
-                            spread: pair[0].settle - pair[1].settle,
+                            spread: -pair[0].settle + pair[1].settle,
                             days_listed: days_listed,
                             front_id: front,
                             back_id: back,
