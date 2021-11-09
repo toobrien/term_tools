@@ -65,7 +65,7 @@ class spread {
         filter_label_cell.innerText = "filter";
         const filter_input_cell = filter_row.insertCell(-1);
         const filter_input = document.createElement("select");
-        ["sequence", "month", "id"].forEach((filter) => {
+        ["sequence", "month", "id", "combo"].forEach((filter) => {
             const option = document.createElement("option")
             option.value = filter;
             option.innerText = filter;
@@ -215,6 +215,38 @@ class spread {
                     min_days_listed, max_days_listed
                 );
                 filtered = filtered.concat(filtered_i);
+            }
+        } else if (filter === "combo") {
+            front = front.split(",");
+            const front_month = front[0];
+            const front_seq = parseInt(front[1]);
+            
+            back = back.split(",");
+            const back_month = back[0];
+            const back_seq = parseInt(back[1]);
+
+            for (const row_set of row_sets) {
+                if (row_set.length <= back_seq)
+                    continue;
+                
+                const front_row = row_set[front_seq];
+                const back_row = row_set[back_seq];
+                const days_listed = back_row.days_listed;
+
+                if (
+                    days_listed >= min_days_listed && 
+                    days_listed <= max_days_listed &&
+                    front_row.month == front_month &&
+                    back_row.month == back_month
+                )
+                    filtered.push({
+                        date: front_row.date,
+                        spread: -front_row.settle + back_row.settle,
+                        days_listed: days_listed,
+                        front_id: front_row.month + front_row.year.substring(2),
+                        back_id: back_row.month + back_row.year.substring(2),
+                        spot_estimate: row_set[0].settle
+                    });
             }
         }
 
