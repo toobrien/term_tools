@@ -1,6 +1,5 @@
 {
-    "quandl_api_key": "YOUR_API_KEY_HERE",
-    "database_file": "./srf.db",
+    "database_file": "../data/futures.db",
     "server_uri": "http://localhost:8080",
     "contracts": [
         { "friendly_name": "HE", "srf_name": "LN" },
@@ -24,6 +23,7 @@
         { "friendly_name": "SB", "srf_name": "SB" },
         { "friendly_name": "CT", "srf_name": "CT" },
         { "friendly_name": "GE", "srf_name": "ED" },
-        { "friendly_name": "ZQ", "srf_name": "FF" }
+        { "friendly_name": "ZQ", "srf_name": "FF" },
+        { "friendly_name": "GC", "srf_name": "GC" }
     ]
 }
