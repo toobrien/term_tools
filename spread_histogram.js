@@ -1,12 +1,17 @@
 class spread_histogram {
 
+
     constructor(view, parent) {
+
         this.set_parent(parent);
         this.set_precision(3);
         this.init(view);
+
     }
+
     
     init(view) {
+
         const table = document.createElement("table");
         const row = table.insertRow(-1);
         
@@ -24,24 +29,26 @@ class spread_histogram {
         this.set_data_table(data_table);
 
         view.appendChild(table);
+
     }
 
+
     set_parent(parent) { this.parent = parent; }
-    get_parent() { return this.parent; }
-
     set_rows(rows) { this.rows = rows; }
-    get_rows() { return this.rows; }
-
     set_chart_view(chart_div) { this.chart_view = chart_div; }
-    get_chart_view() { return this.chart_view; }
-
     set_data_table(data_table) { this.data_table = data_table; }
-    get_data_table() { return this.data_table; }
-    
     set_precision(precision) { this.precision = precision; }
+
+
+    get_parent() { return this.parent; }
+    get_rows() { return this.rows; }
+    get_chart_view() { return this.chart_view; }
+    get_data_table() { return this.data_table; }
     get_precision() { return this.precision; }
 
+
     process_rows() {
+
         const rows = this.get_parent().get_rows();
         const processed = [];
 
@@ -51,9 +58,11 @@ class spread_histogram {
         processed.sort((a, b) => a - b);
 
         return processed;
+
     }
 
     update_chart() {
+        
         const rows = this.get_rows();
         const chart_view = this.get_chart_view();
         const style = this.get_parent().get_hist_style();
@@ -72,13 +81,21 @@ class spread_histogram {
 
         const layout = { 
             height: 225, width: 400, 
-            margin: { l: 25, r: 25, b: 25, t: 0, pad: 0 }
+            margin: { 
+                l: 25,
+                r: 25,
+                b: 25,
+                t: 0,
+                pad: 0 
+            }
         };
         const configuration = { displayModeBar: false };
         Plotly.react(chart_view, data, layout, configuration);
+
     }
 
     update_data_table() {
+
         const p = this.get_precision();
 
         const data_table = this.get_data_table();
@@ -118,12 +135,16 @@ class spread_histogram {
         min_row.insertCell(-1).innerText = min;
         stdev_row.insertCell(-1).innerText = "stdev";
         stdev_row.insertCell(-1).innerText = stdev;
+
     }
 
+    
     refresh() {
+
         this.set_rows(this.process_rows());
         this.update_chart()
         this.update_data_table();
-    }
     
+    }
+
 }
