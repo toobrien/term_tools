@@ -66,6 +66,7 @@ class spread_regression {
                 traces[spread_id] = {
                     x: [],
                     y: [],
+                    text: [],
                     type: "scatter",
                     mode: "markers",
                     name: undefined
@@ -75,6 +76,7 @@ class spread_regression {
 
             trace.x.push(row.x);
             trace.y.push(row.spread);
+            trace.text.push(row.date);
             
             trace.name = spread_id;
 
